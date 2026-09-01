@@ -46,7 +46,8 @@ def index():
 @app.route("/generate", methods=["POST"])
 def generate():
     try:
-        resp = requests.get(SHEET_CSV_URL, timeout=15)
+        headers = {"User-Agent": "Mozilla/5.0 (compatible; ChemClinicScheduler/1.0)"}
+        resp = requests.get(SHEET_CSV_URL, timeout=15, headers=headers)
         resp.raise_for_status()
     except Exception as e:
         return jsonify({"error": f"Couldn't reach the Google Sheet: {e}"}), 500
