@@ -31,8 +31,7 @@ from scheduler_core import (
 app = Flask(__name__)
 
 # EDIT THIS to your actual Sheet's CSV export URL
-SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1Sdx5xTlcQzOBXNOp6aLEAOUXJIBa92hu8PnLi5kKQTQ/export?format=csv&gid=0"
-
+SHEET_CSV_URL = "https://script.google.com/macros/s/AKfycbxVyZddexVtYyDWTEGpRqCPDZjGhwsNQiXW6qb_dbdlLTT-FXVU5YUpxHjNzzwnC9gi/exec"
 # EDIT THIS each semester - schedule won't auto-generate until this many
 # tutors have submitted the form. Set to 0 to disable the requirement.
 MIN_TUTORS_REQUIRED = 8
