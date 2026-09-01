@@ -21,7 +21,7 @@ UNAVAILABLE_DAYS_COLUMN = "Days completely unavailable"
 
 
 def day_column_name(day):
-    return f"Availability - {day} [Available]"
+    return f"Availability - {day} [Available Time Slots]"
 
 
 def time_to_minutes(t):
@@ -61,10 +61,8 @@ def load_tutors_from_csv_text(csv_text):
             continue
 
         max_hours_raw = (row.get(MAX_HOURS_COLUMN) or "").strip()
-        try:
-            max_hours = float(max_hours_raw)
-        except ValueError:
-            max_hours = 999
+        match = re.search(r"[\d.]+", max_hours_raw)
+        max_hours = float(match.group()) if match else 999
 
         unavailable_days = set()
         raw_days = row.get(UNAVAILABLE_DAYS_COLUMN, "") or ""
