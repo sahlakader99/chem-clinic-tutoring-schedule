@@ -2,29 +2,205 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Chem Clinic Scheduler</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  body { font-family: -apple-system, Arial, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; color: #222; }
-  h1 { font-size: 22px; }
-  button { background: #2e7d32; color: white; border: none; padding: 12px 24px; font-size: 16px; border-radius: 6px; cursor: pointer; }
-  button:disabled { background: #999; cursor: default; }
-  table { border-collapse: collapse; width: 100%; margin-top: 24px; font-size: 14px; }
-  th, td { border: 1px solid #ccc; padding: 6px 8px; text-align: left; }
-  th { background: #f0f0f0; }
-  .warning { color: #b45309; background: #fffbeb; border: 1px solid #fde68a; padding: 10px; border-radius: 6px; margin-top: 16px; font-size: 14px; }
-  .error { color: #b91c1c; background: #fef2f2; border: 1px solid #fecaca; padding: 10px; border-radius: 6px; margin-top: 16px; }
-  #status { margin-top: 12px; font-size: 14px; color: #555; }
+  :root {
+    --paper: #FAF7F0;
+    --ink: #2B2A28;
+    --ink-soft: #6B6558;
+    --teal: #2F6F62;
+    --teal-dark: #234E43;
+    --line: #E2DCCB;
+    --card: #FFFFFF;
+    --amber-bg: #FFF6E5;
+    --amber-border: #F0CE85;
+    --amber-text: #7A5A0A;
+    --red-bg: #FDF0EE;
+    --red-border: #F3C2BA;
+    --red-text: #9A3B2E;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, Arial, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 48px 20px 80px;
+    line-height: 1.5;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+
+  .flask {
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 28px;
+    color: var(--teal-dark);
+    margin: 0;
+  }
+
+  .subtitle {
+    color: var(--ink-soft);
+    margin: 8px 0 28px;
+    max-width: 52ch;
+  }
+
+  button#genBtn {
+    background: var(--teal);
+    color: white;
+    border: none;
+    padding: 13px 26px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  button#genBtn:hover:not(:disabled) { background: var(--teal-dark); }
+  button#genBtn:disabled { background: #C7C2B4; cursor: default; }
+
+  #forceBtn {
+    background: white;
+    color: var(--teal-dark);
+    border: 1.5px solid var(--teal);
+    padding: 9px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 12px;
+  }
+  #forceBtn:hover { background: #F0F5F3; }
+
+  #status {
+    margin-top: 16px;
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 20px;
+    box-shadow: 0 1px 2px rgba(43, 42, 40, 0.04);
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 13.5px;
+  }
+
+  th, td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+  }
+
+  th {
+    background: #F3EFE3;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    color: var(--teal-dark);
+    font-size: 13px;
+  }
+
+  th:first-child, td:first-child {
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    width: 1%;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #FCFBF7; }
+
+  .chip {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    margin: 2px 4px 2px 0;
+    white-space: nowrap;
+  }
+
+  .warning, .error {
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin-top: 18px;
+    font-size: 14px;
+  }
+  .warning { color: var(--amber-text); background: var(--amber-bg); border: 1px solid var(--amber-border); }
+  .error { color: var(--red-text); background: var(--red-bg); border: 1px solid var(--red-border); }
+  .warning strong { display: block; margin-bottom: 4px; }
+
+  #results.show { animation: fadein 0.25s ease; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 </head>
 <body>
 
-<h1>Chem Clinic Scheduler</h1>
-<p>Click below to pull current availability responses and generate this week's schedule.</p>
+<header>
+  <svg class="flask" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M9 2v6.5L3.5 18a2 2 0 0 0 1.7 3h13.6a2 2 0 0 0 1.7-3L15 8.5V2" stroke="#2F6F62" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M7 15h10" stroke="#2F6F62" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M9 2h6" stroke="#2F6F62" stroke-width="1.6" stroke-linecap="round"/>
+  </svg>
+  <h1>Chem Clinic Scheduler</h1>
+</header>
+<p class="subtitle">Pulls current tutor availability and builds this week's coverage schedule.</p>
+
 <button id="genBtn" onclick="generateSchedule()">Generate Schedule</button>
 <div id="status"></div>
 <div id="results"></div>
 
 <script>
+const PALETTE = [
+  { bg: '#F6C453', fg: '#3B2F06' },
+  { bg: '#EF9B6B', fg: '#3B1F09' },
+  { bg: '#7FBF8B', fg: '#153822' },
+  { bg: '#8FB8D9', fg: '#0F2A40' },
+  { bg: '#D98FB3', fg: '#3A0F24' },
+  { bg: '#B7ADA3', fg: '#2B2A28' },
+  { bg: '#9FD6D0', fg: '#0B3230' },
+  { bg: '#D6B8F0', fg: '#2B0F3D' },
+];
+
+function colorForName(name) {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
+  return PALETTE[hash % PALETTE.length];
+}
+
+function chip(name) {
+  const c = colorForName(name);
+  return `<span class="chip" style="background:${c.bg};color:${c.fg}">${name}</span>`;
+}
+
 async function generateSchedule(force) {
   const btn = document.getElementById('genBtn');
   const status = document.getElementById('status');
@@ -33,6 +209,7 @@ async function generateSchedule(force) {
   btn.disabled = true;
   status.textContent = 'Checking responses...';
   results.innerHTML = '';
+  results.classList.remove('show');
 
   try {
     const res = await fetch('/generate', {
@@ -49,39 +226,45 @@ async function generateSchedule(force) {
     }
 
     if (data.not_ready) {
-      status.innerHTML = `
+      status.innerHTML = '';
+      const names = data.tutor_names.length ? data.tutor_names.map(chip).join('') : '<em>none yet</em>';
+      results.innerHTML = `
         <div class="warning">
-          Only ${data.tutor_count} of ${data.min_required} tutors have responded so far
-          (${data.tutor_names.join(', ') || 'none yet'}).
-          Schedule won't auto-generate until enough responses are in.
+          <strong>${data.tutor_count} of ${data.min_required} tutors have responded so far</strong>
+          ${names}
         </div>`;
       const forceBtn = document.createElement('button');
+      forceBtn.id = 'forceBtn';
       forceBtn.textContent = 'Generate anyway';
-      forceBtn.style.marginTop = '10px';
       forceBtn.onclick = () => generateSchedule(true);
       results.appendChild(forceBtn);
+      results.classList.add('show');
       btn.disabled = false;
       return;
     }
 
-    status.textContent = `Loaded ${data.tutor_count} tutors: ${data.tutor_names.join(', ')}`;
+    status.textContent = `${data.tutor_count} tutors loaded`;
 
-    let html = '<table><tr><th>Time</th>';
+    let html = '<div class="card"><table><thead><tr><th>Time</th>';
     for (const day of data.days) html += `<th>${day}</th>`;
-    html += '</tr>';
+    html += '</tr></thead><tbody>';
 
     for (const row of data.grid) {
       html += `<tr><td>${row.time}</td>`;
-      for (const day of data.days) html += `<td>${row[day] || ''}</td>`;
+      for (const day of data.days) {
+        const names = (row[day] || '').split(',').map(s => s.trim()).filter(Boolean);
+        html += `<td>${names.map(chip).join('')}</td>`;
+      }
       html += '</tr>';
     }
-    html += '</table>';
+    html += '</tbody></table></div>';
 
     if (data.uncovered && data.uncovered.length > 0) {
-      html += `<div class="warning"><strong>Uncovered slots (not enough available tutors):</strong><br>${data.uncovered.join('<br>')}</div>`;
+      html += `<div class="warning"><strong>Uncovered slots — not enough available tutors</strong>${data.uncovered.join(', ')}</div>`;
     }
 
     results.innerHTML = html;
+    results.classList.add('show');
   } catch (err) {
     status.innerHTML = `<div class="error">Something went wrong: ${err}</div>`;
   }
